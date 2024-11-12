@@ -8,55 +8,49 @@ use Illuminate\Http\Request;
 class foodController extends Controller
 {
     public function getFoods(){
-        $foods = food::all();
-        return response()->json($foods, 200);
+    $foods = food::all();
+    return response()->json($foods);
+    
     }
 
     public function newFood(Request $request){
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'descripcion' => 'required|string',
-            'precio' => 'required|numeric',
-            'categoria' => 'required|string|max:255',
-            'url_img' => 'required|url'
-        ]);
-
-        $food = food::create($validatedData);
-        return response()->json($food, 201); 
+    $food = food::create($request->all());
+    return response()->json($food);
     }
 
     public function getFood($id){
-        $food = food::find($id);
-        if(!$food){
-            return response()->json(['message' => 'food not found'], 404);
-        }
+    $food = food::find($id);
+    if (!$food){
+    return response()->json(['message' => 'Food not found'], 404);
+    }    
+    else
+    {
         return response()->json($food);
+    }
+    }
+
+    public function updateFood(Request $request, $id){
+    $food = food::find($id);
+    if (!$food){
+    return response()->json(['message' => 'Food not found'], 404);
+    }
+    else
+    {
+        $food->update($request->all());
+        return response()->json($food);
+    }
     }
 
     public function deleteFood($id){
-        $food = food::find($id);
-        if(!$food){
-            return response()->json(['message' => 'food not found'], 404);
-        }
+    $food = food::find($id);
+    if (!$food){
+    return response()->json(['message' => 'Food not found'], 404);
+    }
+    else
+    {
         $food->delete();
-        return response()->json(['message' => 'food deleted'], 200);
+        return response()->json(['message' => 'Food deleted']);
     }
 
-    public function updateFood($id, Request $request){
-        $food = food::find($id);
-        if(!$food){
-            return response()->json(['message' => 'food not found'], 404);
-        }
-
-        $validatedData = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'descripcion' => 'sometimes|required|string',
-            'precio' => 'sometimes|required|numeric',
-            'categoria' => 'sometimes|required|string|max:255',
-            'url_img' => 'sometimes|required|url'
-        ]);
-
-        $food->update($validatedData);
-        return response()->json($food);
     }
 }
